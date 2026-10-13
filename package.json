@@ -1,0 +1,11 @@
+{
+  "name": "touch-grass",
+  "private": true,
+  "type": "module",
+  "description": "A local field station. An open-weight model writes one card, then you go outside.",
+  "scripts": {
+    "start": "node server.mjs",
+    "facts": "node scripts/check-facts.mjs",
+    "setup": "powershell -ExecutionPolicy Bypass -File setup.ps1"
+  }
+}

@@ -1,0 +1,6 @@
+bin/
+models/
+data/journal.json
+*.log
+*.zip
+*.gguf

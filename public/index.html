@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1e2b20" />
+  <title>Touch Grass</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%231e2b20' width='32' height='32' rx='6'/%3E%3Cpath d='M8 26c2-8 1-14 4-18M16 26c0-10 2-16 1-20M24 26c-1-7 2-12 5-16' fill='none' stroke='%23e7f0dc' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="shell">
+    <header class="sign">
+      <p class="eyebrow">Field station</p>
+      <h1>Touch Grass</h1>
+      <p class="lede">Read this once. Then go outside.</p>
+      <p class="status" id="status" role="status">Waking the model on this machine…</p>
+    </header>
+
+    <main id="home">
+      <form id="plan" class="sheet">
+        <fieldset class="outings">
+          <legend>What kind of outside</legend>
+          <label class="choice">
+            <input type="radio" name="outing" value="garden" />
+            <span class="choice-kicker">Bed</span>
+            <span class="choice-name">Garden</span>
+            <span class="choice-hint">One job this week</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="outing" value="walk" checked />
+            <span class="choice-kicker">Block</span>
+            <span class="choice-name">Walk</span>
+            <span class="choice-hint">Out and back</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="outing" value="sit" />
+            <span class="choice-kicker">Still</span>
+            <span class="choice-name">Sit</span>
+            <span class="choice-hint">One seat</span>
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="place">Place</label>
+          <input id="place" name="place" list="place-list" placeholder="Minneapolis" autocomplete="off" />
+          <datalist id="place-list"></datalist>
+          <div class="row-actions">
+            <button type="button" class="text" id="nearest">Use the closest listed place</button>
+            <button type="button" class="text" id="toggle-custom">My place isn’t listed</button>
+          </div>
+        </div>
+
+        <div id="custom" class="custom" hidden>
+          <div class="split">
+            <label>Name <input id="custom-city" placeholder="My town" /></label>
+            <label>Climate
+              <select id="custom-climate"></select>
+            </label>
+          </div>
+          <div class="split">
+            <label>Last spring frost <input id="custom-last" placeholder="05-10" inputmode="numeric" /></label>
+            <label>First fall frost <input id="custom-first" placeholder="10-01" inputmode="numeric" /></label>
+          </div>
+          <p class="fine">Month-day, like 04-20. Leave blank if it almost never freezes. A rough latitude helps the sunset.</p>
+          <label>Latitude <input id="custom-lat" placeholder="44.9" inputmode="decimal" /></label>
+        </div>
+
+        <p class="facts" id="facts" hidden></p>
+
+        <fieldset class="minutes">
+          <legend>How long</legend>
+          <label><input type="radio" name="minutes" value="15" /> 15</label>
+          <label><input type="radio" name="minutes" value="25" checked /> 25</label>
+          <label><input type="radio" name="minutes" value="40" /> 40</label>
+        </fieldset>
+
+        <div class="field">
+          <label for="note">What’s true right now</label>
+          <input id="note" name="note" maxlength="280" placeholder="Balcony only. Windy. I have twenty minutes before the school run." />
+        </div>
+
+        <p class="error" id="error" role="alert" hidden></p>
+        <button type="submit" class="primary" id="write" disabled>Write my card</button>
+        <p class="fine" id="write-note">The first card waits while the weights load. After that it is quicker.</p>
+      </form>
+
+      <section class="sheet why">
+        <h2>Why this stays here</h2>
+        <p>The card is written by <strong>Qwen2.5 1.5B Instruct</strong>, an open-weight model, running in <strong>llama.cpp</strong> on this computer. Frost dates are calculated in the app. Your note is saved to <code>data/journal.json</code>. Nothing is sent to a model API.</p>
+        <p>A closed chatbot will happily tell Phoenix to wait for spring. The desert calendar in this app will not. Edit <code>prompts/ranger.txt</code>, or the voice box below, and the ranger changes. Drop another <code>.gguf</code> in <code>models/</code> and restart to swap the model. After the download, it does not need the internet.</p>
+        <details id="voice-panel">
+          <summary>Edit the ranger’s voice</summary>
+          <textarea id="voice" rows="10" spellcheck="true"></textarea>
+          <button type="button" class="secondary" id="save-voice">Save voice</button>
+          <p class="fine" id="voice-note"></p>
+        </details>
+        <p class="fine"><button type="button" class="text" id="open-journal">Field notes</button></p>
+      </section>
+    </main>
+
+    <main id="card-view" hidden>
+      <article class="card" id="card"></article>
+      <div class="card-actions noprint">
+        <button type="button" class="primary" id="pocket-go">Phone in pocket</button>
+        <button type="button" class="text" id="again">Write it again</button>
+        <button type="button" class="text" id="print">Print and leave the phone</button>
+        <button type="button" class="text" id="copy">Copy the card</button>
+        <button type="button" class="text" id="card-home">Start over</button>
+      </div>
+    </main>
+
+    <main id="return-view" hidden>
+      <section class="sheet">
+        <p class="eyebrow">Back</p>
+        <h2 id="return-title">What did you notice?</h2>
+        <p class="fine" id="return-time"></p>
+        <form id="notice-form">
+          <label for="noticed" class="sr">What did you notice?</label>
+          <textarea id="noticed" rows="4" maxlength="400" placeholder="One thing. A sound, a tree, the soil."></textarea>
+          <button type="submit" class="primary" id="save-note">Keep the note</button>
+        </form>
+        <div id="saved" hidden>
+          <p class="entry" id="saved-entry"></p>
+          <p class="fine" id="saved-meta"></p>
+          <button type="button" class="text" id="saved-home">Another outing</button>
+          <button type="button" class="text" id="saved-journal">Field notes</button>
+        </div>
+      </section>
+    </main>
+
+    <main id="journal-view" hidden>
+      <section class="sheet">
+        <p class="eyebrow">On this machine</p>
+        <h2>Field notes</h2>
+        <div id="journal-list"></div>
+        <button type="button" class="text" id="journal-home">Back</button>
+      </section>
+    </main>
+  </div>
+
+  <section id="pocket" hidden>
+    <p class="eyebrow">Outside</p>
+    <p class="clock" id="clock">00:00</p>
+    <p class="pocket-line" id="pocket-line"></p>
+    <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+    <p class="plan" id="plan-note"></p>
+    <button type="button" class="ghost" id="im-back">I’m back</button>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
